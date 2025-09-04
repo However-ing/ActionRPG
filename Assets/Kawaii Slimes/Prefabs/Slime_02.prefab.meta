@@ -5,6 +5,7 @@ PrefabImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< HEAD
 AssetOrigin:
   serializedVersion: 1
   productId: 221172
@@ -12,3 +13,5 @@ AssetOrigin:
   packageVersion: 1.01
   assetPath: Assets/Kawaii Slimes/Prefabs/Slime_02.prefab
   uploadId: 593187
+=======
+>>>>>>> 82409f5c7f6f531012bff476469a35097c342c6b
