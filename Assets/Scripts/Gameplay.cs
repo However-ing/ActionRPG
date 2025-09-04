@@ -36,7 +36,7 @@ public class Gameplay : MonoBehaviour
     // ลด HP เมื่อสัมผัสกับวัตถุที่มี tag "Enemy"
     void OnTriggerEnter(Collider other)
     {
-        if (gameObject.CompareTag("Player") && other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy"))
         {
             player.hp -= 10;
             player.hp = Mathf.Max(player.hp, 0);
