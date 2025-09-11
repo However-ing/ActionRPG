@@ -1,80 +1,95 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 public class Slime : MonoBehaviour
 {
-    public float moveSpeed = 2f; // ความเร็วในการเคลื่อนที่
-    public float jumpInterval = 2f; // ระยะเวลาระหว่างการกระโดด
-    public float jumpDuration = 0.5f; // ระยะเวลาที่ใช้ในการกระโดด
-    private Vector3 moveDirection; // ทิศทางการเคลื่อนที่
-    private float timer; // ตัวจับเวลา
-    private bool isJumping; // สถานะว่ากำลังกระโดดหรือไม่
+    public float moveSpeed = 2f;        // ความเร็วในการเคลื่อนที่
+    public float jumpInterval = 2f;     // ระยะเวลาระหว่างการกระโดด
+    public float jumpDuration = 0.5f;   // ระยะเวลาที่ใช้ในการกระโดด
 
-    private Animator animator; // ตัวควบคุมแอนิเมชัน
+    private float timer;                // ตัวจับเวลา
+    private bool isJumping;             // สถานะว่ากำลังกระโดดหรือไม่
+
+    private NavMeshAgent agent;         // ตัวควบคุม NavMesh
+    public GameObject player;
+
+    public float stopDistance = 1.5f; // ระยะห่างที่หยุดเมื่อเข้าใกล้ผู้เล่น
+    public float detectionRange = 10f; // ระยะตรวจจับผู้เล่น
+
+    private Animator animator;          // ตัวควบคุมแอนิเมชัน
+    bool isPlayerInRange = false; // ตัวแปรตรวจสอบว่าผู้เล่นอยู่ในระยะตรวจจับหรือไม่
+    bool hasReachePlayer = false; // ตัวแปรตรวจสอบว่าถึงผู้เล่นหรือยัง
 
     void Start()
     {
-        // กำหนดทิศทางเริ่มต้นแบบสุ่ม
-        ChangeDirection();
-
         // ดึง Animator จาก GameObject
         animator = GetComponent<Animator>();
+
+        // ดึง NavMeshAgent
+        agent = GetComponent<NavMeshAgent>();
+
+        // ตั้งค่าความเร็วเริ่มต้น
+        agent.speed = moveSpeed;
+
+        // ปิดการอัปเดตการหมุนอัตโนมัติ (ถ้าอยากให้หมุนด้วย Animator)
+        agent.updateRotation = true;
     }
 
     void Update()
     {
-        // อัปเดตตัวจับเวลา
-        timer += Time.deltaTime;
 
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        isPlayerInRange = distance <= detectionRange;
+
+
+        timer += Time.deltaTime;
+        if (isPlayerInRange)
+        {
+            MoveToPlayer();
+        }
+    }
+
+    void MoveToPlayer()
+    {
         if (isJumping)
         {
-            // ระหว่างกระโดด ให้เคลื่อนที่
-            transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+            // หากกำลังกระโดด → ให้ agent เคลื่อนไปหา player
+            if (player != null)
+            {
+                agent.SetDestination(player.transform.position);
+            }
 
-            // หากกระโดดครบระยะเวลาแล้ว ให้หยุด
+            // เมื่อหมดเวลาการกระโดด → หยุด
             if (timer >= jumpDuration)
             {
                 isJumping = false;
                 timer = 0f;
 
-                // เล่นแอนิเมชันหยุดกระโดด
                 if (animator != null)
                 {
                     animator.SetBool("isJumping", false);
                 }
+
+                // หยุด agent ชั่วคราว
+                agent.isStopped = true;
             }
         }
         else
         {
-            // หากถึงเวลาที่จะกระโดดใหม่
+            // ถ้าถึงเวลาเริ่มกระโดดใหม่
             if (timer >= jumpInterval)
             {
                 isJumping = true;
                 timer = 0f;
 
-                // เปลี่ยนทิศทางใหม่
-                ChangeDirection();
-
-                // เล่นแอนิเมชันกระโดด
                 if (animator != null)
                 {
                     animator.SetBool("isJumping", true);
                 }
+
+                // เปิด agent เพื่อเคลื่อนที่
+                agent.isStopped = false;
             }
-        }
-    }
-
-    void ChangeDirection()
-    {
-        // สุ่มทิศทางใหม่
-        float randomX = Random.Range(-1f, 1f);
-        float randomZ = Random.Range(-1f, 1f);
-        moveDirection = new Vector3(randomX, 0, randomZ).normalized; // ทำให้เวกเตอร์เป็นหน่วย
-
-        // หมุนตัวละครให้หันหน้าไปในทิศทางใหม่
-        if (moveDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = targetRotation;
         }
     }
 }
