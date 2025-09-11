@@ -42,4 +42,6 @@ public class Gameplay : MonoBehaviour
                 player.hp = Mathf.Max(player.hp, 0);
             }
     }
+
+    //test from Soulrinji
 }
