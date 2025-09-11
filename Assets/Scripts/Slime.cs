@@ -13,7 +13,7 @@ public class Slime : MonoBehaviour
     private NavMeshAgent agent;         // ตัวควบคุม NavMesh
     public GameObject player;
 
-    public float stopDistance = 1.5f; // ระยะห่างที่หยุดเมื่อเข้าใกล้ผู้เล่น
+    public float stopDistance = 1f; // ระยะห่างที่หยุดเมื่อเข้าใกล้ผู้เล่น
     public float detectionRange = 10f; // ระยะตรวจจับผู้เล่น
 
     private Animator animator;          // ตัวควบคุมแอนิเมชัน
@@ -45,8 +45,23 @@ public class Slime : MonoBehaviour
         timer += Time.deltaTime;
         if (isPlayerInRange)
         {
-            MoveToPlayer();
+            if (distance <= stopDistance)
+            {
+                StopMoving();
+                animator.SetBool("Attack", true);
+            }
+            else
+            {
+                MoveToPlayer();
+                animator.SetBool("Attack", false);
+            }
+            
         }
+        else
+        {
+            StopMoving();
+        }
+        
     }
 
     void MoveToPlayer()
@@ -91,5 +106,19 @@ public class Slime : MonoBehaviour
                 agent.isStopped = false;
             }
         }
+    }
+
+    void StopMoving()
+    {
+        if (agent.isActiveAndEnabled)
+        {
+            agent.ResetPath();
+            hasReachePlayer = true;
+        }
+    }
+
+    void UpdateAnimation()
+    {
+        animator.SetBool("Attack", hasReachePlayer);
     }
 }
