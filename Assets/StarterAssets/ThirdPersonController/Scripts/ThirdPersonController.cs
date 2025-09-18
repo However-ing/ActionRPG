@@ -162,6 +162,7 @@ namespace StarterAssets
             Attack();
             GroundedCheck();
             Move();
+            Attack();
         }
         
         private void LateUpdate()
@@ -380,6 +381,28 @@ namespace StarterAssets
                 { 
                     if (_hasAnimator) 
                     { 
+                        _animator.SetBool(_animIDAttack, true);
+                        _input.attack = false;
+                    }
+                }
+                else
+                {
+                    if (_hasAnimator)
+                    {
+                        _animator.SetBool(_animIDAttack, false);
+                    }
+                }
+            }
+        }
+
+        private void Attack()
+        {
+            if (Grounded)
+            {
+                if (_input.attack)
+                {
+                    if (_hasAnimator)
+                    {
                         _animator.SetBool(_animIDAttack, true);
                         _input.attack = false;
                     }
