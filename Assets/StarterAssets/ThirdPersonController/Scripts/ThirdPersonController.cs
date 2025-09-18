@@ -97,6 +97,7 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDAttack;
         //dudhh
 
 #if ENABLE_INPUT_SYSTEM 
@@ -160,6 +161,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Attack();
         }
 
         private void LateUpdate()
@@ -174,6 +176,7 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttack = Animator.StringToHash("Attack");
         }
 
         private void GroundedCheck()
@@ -368,6 +371,28 @@ namespace StarterAssets
             Gizmos.DrawSphere(
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
+        }
+
+        private void Attack()
+        {
+            if (Grounded)
+            {
+                if (_input.attack)
+                {
+                    if (_hasAnimator)
+                    {
+                        _animator.SetBool(_animIDAttack, true);
+                        _input.attack = false;
+                    }
+                }
+                else
+                {
+                    if (_hasAnimator)
+                    {
+                        _animator.SetBool(_animIDAttack, false);
+                    }
+                }
+            }
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
