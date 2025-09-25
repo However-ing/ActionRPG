@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class Slime : MonoBehaviour
 {
+    public Image hpBar;
+    public float hp = 100f;
+    private float maxhp;
+
     public float moveSpeed = 2f;        // ความเร็วในการเคลื่อนที่
     public float jumpInterval = 2f;     // ระยะเวลาระหว่างการกระโดด
     public float jumpDuration = 0.5f;   // ระยะเวลาที่ใช้ในการกระโดด
@@ -19,7 +25,6 @@ public class Slime : MonoBehaviour
     private Animator animator;          // ตัวควบคุมแอนิเมชัน
     bool isPlayerInRange = false; // ตัวแปรตรวจสอบว่าผู้เล่นอยู่ในระยะตรวจจับหรือไม่
     bool hasReachePlayer = false; // ตัวแปรตรวจสอบว่าถึงผู้เล่นหรือยัง
-
     void Start()
     {
         // ดึง Animator จาก GameObject
@@ -33,6 +38,8 @@ public class Slime : MonoBehaviour
 
         // ปิดการอัปเดตการหมุนอัตโนมัติ (ถ้าอยากให้หมุนด้วย Animator)
         agent.updateRotation = true;
+
+        maxhp = hp;
     }
 
     void Update()
@@ -61,7 +68,21 @@ public class Slime : MonoBehaviour
         {
             StopMoving();
         }
+        UpdateUI();
         
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Sword"))
+        {
+            hp -= 10f;
+            if (hp == 0)
+            {
+                Destroy(gameObject); 
+            }
+            
+        }
     }
 
     void MoveToPlayer()
@@ -117,8 +138,9 @@ public class Slime : MonoBehaviour
         }
     }
 
-    void UpdateAnimation()
+
+    void UpdateUI()
     {
-        animator.SetBool("Attack", hasReachePlayer);
+        hpBar.fillAmount = (float)hp / 100f;
     }
 }
