@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Slime : MonoBehaviour
 {
+    public Image hpBar;
+    public float hp = 100f;
+
     public float moveSpeed = 2f;        // ความเร็วในการเคลื่อนที่
     public float jumpInterval = 2f;     // ระยะเวลาระหว่างการกระโดด
     public float jumpDuration = 0.5f;   // ระยะเวลาที่ใช้ในการกระโดด
@@ -45,7 +49,7 @@ public class Slime : MonoBehaviour
         timer += Time.deltaTime;
         if (isPlayerInRange)
         {
-            if (distance <= stopDistance)
+            if (distance < stopDistance)
             {
                 StopMoving();
                 animator.SetBool("Attack", true);
@@ -55,13 +59,14 @@ public class Slime : MonoBehaviour
                 MoveToPlayer();
                 animator.SetBool("Attack", false);
             }
-            
+
         }
         else
         {
             StopMoving();
         }
-        
+
+        UpdateUI();
     }
 
     void MoveToPlayer()
@@ -117,8 +122,28 @@ public class Slime : MonoBehaviour
         }
     }
 
-    void UpdateAnimation()
+
+    void OnTriggerEnter(Collider other)
     {
-        animator.SetBool("Attack", hasReachePlayer);
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(10f); // ลด HP 10 เวลาโดนดาบชน
+        }
     }
+
+    void UpdateUI()
+    {
+        hpBar.fillAmount = hp / 100f;
+    }
+
+    public void TakeDamage(float amount)
+    {
+        hp -= amount;
+        if (hp <= 0f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
 }

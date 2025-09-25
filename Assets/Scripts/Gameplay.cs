@@ -24,7 +24,7 @@ public class Gameplay : MonoBehaviour
     {
         player = new Character("Yuki", 100);
         playerName = GameObject.Find("PlayerName").GetComponent<TextMeshProUGUI>();
-        hpBar = GameObject.Find("HP").GetComponent<Image>();
+        hpBar = GameObject.Find("HPbar").GetComponent<Image>();
         playerName.text = player.name;
     }
 
@@ -36,11 +36,11 @@ public class Gameplay : MonoBehaviour
     // ลด HP เมื่อสัมผัสกับวัตถุที่มี tag "Enemy"
     void OnTriggerEnter(Collider other)
     {
-            if (other.CompareTag("Enemy"))
-            {
-                player.hp -= 10;
-                player.hp = Mathf.Max(player.hp, 0);
-            }
+        if (other.CompareTag("Enemy"))
+        {
+            player.hp -= 10;
+            player.hp = Mathf.Max(player.hp, 0);
+        }
     }
 
     //test from Soulrinji
